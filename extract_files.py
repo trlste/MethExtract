@@ -20,8 +20,15 @@ def main():
     )
 
     parser.add_argument(
+        "--chr",
+        default=[],
+        nargs='*',
+        help="chromosomes to analyze"
+    )
+
+    parser.add_argument(
         "--indir",
-        required=True,
+        default=f'{os.getcwd()}/wgbs_tools/references/hg38',
         help="Input directory containing CpG.bed.gz, and CpG.chrome.size. If you have run init_genome, \
             probably under [INSTALLATION_PATH]/wgbs_tools/references/[GENOME]"
     )
@@ -103,19 +110,32 @@ def main():
     # -------------------------------
     # 4. Create bigWig files with new suffixes
     # -------------------------------
-    meth_bw_path = os.path.join(outdir, f"{prefix}_WGBS_FractionalMethylation.bigwig")
-    cov_bw_path = os.path.join(outdir, f"{prefix}_WGBS_ReadCoverage.bigwig")
+    if len(args.chr) == 0:
+        meth_bw_path = os.path.join(outdir, f"{prefix}_WGBS_FractionalMethylation.bigwig")
+        cov_bw_path = os.path.join(outdir, f"{prefix}_WGBS_ReadCoverage.bigwig")
+    else:
+        meth_bw_path = os.path.join(outdir, f"{prefix}_WGBS_{''.join(args.chr)}_FractionalMethylation.bigwig")
+        cov_bw_path = os.path.join(outdir, f"{prefix}_WGBS_{''.join(args.chr)}_ReadCoverage.bigwig")
+
 
     bw_meth = pyBigWig.open(meth_bw_path, "w")
     bw_cov = pyBigWig.open(cov_bw_path, "w")
 
-    bw_meth.addHeader(list(chrom_sizes.items()))
-    bw_cov.addHeader(list(chrom_sizes.items()))
+    if len(args.chr) == 0:
+        bw_meth.addHeader(list(chrom_sizes.items()))
+        bw_cov.addHeader(list(chrom_sizes.items()))
+    else:
+        hds = {k: chrom_sizes[k] for k in args.chr}.items()
+        bw_meth.addHeader(list(hds))
+        bw_cov.addHeader(list(hds))
 
     # ----------------------------------------------------
     # 5. Write data by chromosome
     # ----------------------------------------------------
-    for chrom in cpg_bed["chrom"].unique():
+    unique_chroms = cpg_bed["chrom"].unique()
+    chroms = list(set(unique_chroms).intersection(args.chr)) if len(args.chr) != 0 else unique_chroms
+
+    for chrom in chroms:
         idx = cpg_bed["chrom"] == chrom
         cov_mask = total_cov[idx] > 0
 
