@@ -12,7 +12,15 @@ python3 extract_files.py /path/to/beta/XXXX.hg38.beta --indir /path/to/wgbs_tool
 
 # Compute distance matrix
 
-To explore how different lambda influences the breakpoints, run compute_breakpoints.py and cluster_breakpoints.R sequentially for each sample:
+Two ways to cluster breakpoints across samples.
+
+To use only native R, run
+```
+Rscript cluster.R
+```
+change the path/file names in the script to run on different lambdas. This outputs a .bed file representing the clusters of breakpoints with distance cutoff at 5000.
+
+To use a combination of pyBigWig / R and explore how different lambda influences the breakpoints, run compute_breakpoints.py and cluster_breakpoints.R sequentially for each sample:
 ```
 # This will output the distance matrix of breakpoints
 python compute_breakpoints.py -i roadmap/GSM5652176_WGBS_Seg_L0.1.bigwig -c 2 -o matrix/GSM5652176_WGBS_Seg_L0.1.csv
