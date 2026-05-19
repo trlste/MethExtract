@@ -1,0 +1,85 @@
+---
+title: "DM_Plots"
+author: "Jiusi_Wang"
+date: "2026-05-18"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Read the table
+
+```{r read-table, echo=TRUE}
+library(data.table)
+library(ggplot2)
+
+# read the table
+tile_results_dt <- fread("dm_results_cd4-cd8_0518_2_tile_level.csv")
+# average length grouped by random set
+avg.width <- tile_results_dt[, .(avg_width = mean(width)), by = segment_count]
+# significant segments
+sig_dt <- tile_results_dt[fdr < 0.05]
+```
+
+
+```{r sig-seg, echo=TRUE}
+# change the score
+set_score <- 1.8
+
+frac_dt <- tile_results_dt[
+  fdr < 0.05,
+  .(
+    n_significant = .N,
+    n_signal_gt_2 = sum(signal_score > set_score, na.rm = TRUE),
+    fraction_signal_gt_2 = mean(signal_score > set_score, na.rm = TRUE)
+  ),
+  by = segment_count
+]
+
+p <- ggplot(frac_dt, aes(x = factor(segment_count), y = fraction_signal_gt_2)) +
+  geom_col() +
+  labs(
+    x = "Random set",
+    y = "Fraction",
+    title = paste("Fraction of high-score > ", set_score, " segments among significant segments")
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20),      # Main title size
+    axis.title.x = element_text(size = 16),    # X-axis label size
+    axis.title.y = element_text(size = 16),    # Y-axis label size
+    axis.text.x = element_text(size = 14),     # X-axis tick label size
+    axis.text.y = element_text(size = 14)      # Y-axis tick label size
+  )
+p
+```
+
+
+```{r methdiff-pvalue, echo=TRUE}
+plot_dt <- copy(tile_results_dt)
+plot_dt[, neg_log10_p := -log10(pmax(pvalue, .Machine$double.xmin))]
+
+p <- ggplot(plot_dt, aes(x = methylation_difference, y = signal_score)) +
+  geom_hex(bins = 40) +
+  facet_wrap(~ segment_count, scales = "fixed") +
+  geom_hline(yintercept = -log10(0.05), linetype = "dashed") +
+  geom_vline(xintercept = 0, linetype = "dashed") +
+  labs(
+    x = "Meth diff: CD8(Case) - CD4(Control)",
+    y = expression(-log[10](FDR)),
+    fill = "Count per hexbin",
+    title = "Density of meth diff vs. p-value"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 20),      # Main title size
+    axis.title.x = element_text(size = 16),    # X-axis label size
+    axis.title.y = element_text(size = 16),    # Y-axis label size
+    axis.text.x = element_text(size = 14, angle = 45, hjust = 1),     # X-axis tick label size
+    axis.text.y = element_text(size = 14),      # Y-axis tick label size
+    strip.text = element_text(size = 14)
+  )
+p
+```
