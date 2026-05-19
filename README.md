@@ -1,13 +1,33 @@
 # MethExtract
 
-This script is for extracting methylation ratio and counts information from .beta files.
-If the genome is not initiated, please intiate the genome using wgbs_tools:
+First extract methylation ratio and counts information from .beta files.
+If genome is not initiated, intiate the genome using wgbs_tools:
 ```
 wgbs_tools init_genome hg38
 ```
-Then extract the information from .beta files:
+## Step 1
+extract the information from .beta files:
 ```
 python3 extract_files.py /path/to/beta/XXXX.hg38.beta --indir /path/to/wgbs_tools/wgbs_tools/references/hg38 
+```
+## Step 2
+compute L0 segmentation via meth.R, we used lambda = 0.5. meth.R expects inputs to be in roadmap/:
+```
+Rscript meth.R
+```
+TODO: automatically collect the results of L0 segmentation into roadmap/segments/ .
+
+## Step 3
+Run scripts to obtain new global segmentation `output.bedgraph`
+```
+Rscript cosegmentation.R
+Rscript cofrequency.R
+Rscript visualize_cofreq.R
+```
+## Step 4
+Apply new global segmentation to files. Results will be under segmentation_out/
+```
+Rscript resegment.R
 ```
 
 # Compute distance matrix

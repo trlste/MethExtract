@@ -10,7 +10,17 @@ chroms_to_use <- c("chr2")  # or NULL to use all
 
 # --- Load CpG positions ---
 cat("Loading CpG BED...\n")
-cpg_bed <- fread(cpg_bed_path, col.names = c("chrom", "start", "end"))
+
+# This is a workaround! The entire CPG bed file can't fit all on disk
+cpg_bed <- fread(cmd = "zcat wgbs_tools/references/hg38/CpG.bed.gz | awk '$1==\"chr2\"'",
+                 col.names = c("chrom", "start", "cpg_index"))
+cpg_bed[, start := start - 1]   # convert to 0-based
+cpg_bed[, end := start + 2]
+
+#cat("cpg_bed columns:", names(cpg_bed), "\n")
+#cat("First few rows of chr2:\n")
+#print(head(cpg_bed[chrom == "chr2"]))
+#cat("Max start for chr2:", max(cpg_bed[chrom == "chr2", start]), "\n")
 
 bigwig_files <- list.files(bigwig_dir, pattern = "\\.bigwig$", full.names = TRUE)
 cat(sprintf("Found %d bigWig files\n", length(bigwig_files)))

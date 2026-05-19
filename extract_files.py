@@ -136,7 +136,8 @@ def main():
     chroms = list(set(unique_chroms).intersection(args.chr)) if len(args.chr) != 0 else unique_chroms
 
     for chrom in chroms:
-        idx = cpg_bed["chrom"] == chrom
+        idx = (cpg_bed["chrom"] == chrom).values  # <-- add .values here
+
         cov_mask = total_cov[idx] > 0
 
         if cov_mask.any():

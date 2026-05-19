@@ -1,0 +1,8 @@
+betadir/
+logs/
+roadmap/
+segmentation_out/
+test/
+wgbs_tools/
+*.bed
+*.bedgraph
