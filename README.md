@@ -30,6 +30,20 @@ Apply new global segmentation to files. Results will be under segmentation_out/
 Rscript resegment.R
 ```
 
+# Differential Methylation Analysis
+Use R package bsseq to do differential methylation analysis, given co-segments or random sets.
+```
+Rscript diff_methyl_random_v1.R # for random sets
+Rscript diff_methyl_random_v3.R # for co-segments
+```
+
+# Plot Metrics
+Run R scripts to plot metrics of co-segments and random sets, adjust cut-offs in the scripts.
+```
+dm_random_plot.Rmd # mean_diff vs. p-value
+plot_both.R # average width vs. fraction within/beyond cut-offs
+```
+
 # Compute distance matrix
 
 Two ways to cluster breakpoints across samples.
