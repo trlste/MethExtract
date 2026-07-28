@@ -41,7 +41,7 @@ Rscript diff_methyl_random.R # for random tiles
 Rscript diff_methyl_coseg.R # for cosegments
 ```
 
-# Step 2
+## Step 2
 
 Run R scripts to plot metrics of cosegments and random tiles
 There are three components in the plot: cosegments, random tiles, reference `GSE186458_blocks.s207.hg38.bed.gz` (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE186458).
