@@ -30,18 +30,24 @@ Apply new global segmentation to files. Results will be under segmentation_out/
 Rscript resegment.R
 ```
 
-# Differential Methylation Analysis
-Use R package bsseq to do differential methylation analysis, given co-segments or random sets.
+# Evaluation of segmentation methods
+
+## Step 1
+
+Use R package bsseq to do differential methylation analysis, given cosegments or random tiles.
+Prepare a list of samples involved `sample_sheet.csv` (please refer to the annotation).
 ```
-Rscript diff_methyl_random_v1.R # for random sets
-Rscript diff_methyl_random_v3.R # for co-segments
+Rscript diff_methyl_random.R # for random tiles
+Rscript diff_methyl_coseg.R # for cosegments
 ```
 
-# Plot Metrics
-Run R scripts to plot metrics of co-segments and random sets, adjust cut-offs in the scripts.
+# Step 2
+
+Run R scripts to plot metrics of cosegments and random tiles
+There are three components in the plot: cosegments, random tiles, reference `GSE186458_blocks.s207.hg38.bed.gz` (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE186458).
+Adjust cut-offs in the scripts.
 ```
-dm_random_plot.Rmd # mean_diff vs. p-value
-plot_both.R # average width vs. fraction within/beyond cut-offs
+Rscript plot_three.R
 ```
 
 # Compute distance matrix
