@@ -50,6 +50,23 @@ Adjust cut-offs in the scripts.
 Rscript plot_three.R
 ```
 
+# Run ChromHMM analysis
+
+Run a ChromHMM analysis to compute the chromatin states enrichment of the shrot, medium, and long segments.
+The background is computed based on shuffled regions.
+
+```
+# Run step-by-step, 7 granularities x 1 lambdas
+Rscript s1_divide_segments.R
+sh s2_make_100_random.sh
+sh s3_compute_overlap_observe.sh
+sh s4_compute_overlap_random.sh
+Rscript s5_compute_enrichment.R "${lambda}"
+
+# Submit the batch job at once, 7 granularities x 4 lambdas
+sbatch batch_chromhmm.sh
+```
+
 # Compute distance matrix
 
 Two ways to cluster breakpoints across samples.
